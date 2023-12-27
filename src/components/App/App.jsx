@@ -2,40 +2,42 @@ import FeedbackOptions from "components/FeedbackOptions";
 import Notification from "components/Notification";
 import Section from "components/Section";
 import Statictics from "components/Statictics";
-import { Component } from "react";
+import { useState } from "react";
 import { Container } from "./App.styled";
 
-export class App extends Component{
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0
+export const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const onLeaveFeedback = state => {
+    switch (state) {
+      case 'good':
+        setGood(prev => prev + 1);
+        break;
+      case 'neutral':
+        setNeutral(prev => prev + 1);
+        break;
+      case 'bad':
+        setBad(prev => prev + 1);
+        break;
+      default:
+        return;
+    };
   };
-  onLeaveFeedback = state => {
-    this.setState(prevState =>({[state]:prevState[state] + 1}))
-  }
 
-  totalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    return good + neutral + bad;
-  };
+  const totalFeedback = () => good + neutral + bad;
+  const total = totalFeedback();
 
-  positivePercentage = () => {
-    const { good } = this.state;
-    const total = this.totalFeedback();
-    return Math.round((good / total) * 100) || 0;
-  };
+  const positivePercentage = () => Math.round((good / total) * 100) || 0;
+  const percentage = positivePercentage();
 
-  render() {
-    const { good, neutral, bad } = this.state;
-    const total = this.totalFeedback();
-    const percentage = this.positivePercentage();
-    const options = Object.keys(this.state);
+  const options = Object.keys({ good, neutral, bad });
 
-    return (
+  return (
       <Container>
         <Section title="Please leave feedback">
-          <FeedbackOptions options={options} onLeaveFeedback={this.onLeaveFeedback} />
+          <FeedbackOptions options={options} onLeaveFeedback={onLeaveFeedback} />
         </Section>
         <Section title="Statictics">
           {total !== 0 ? (
@@ -51,5 +53,4 @@ export class App extends Component{
         </Section>
       </Container>
     );
-  }
 };
